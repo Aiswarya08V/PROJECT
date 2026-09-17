@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com'
+            }
+        }
+        stage('Generate Exam Analytics') {
+            steps {
+                script {
+                    // Automatically detects your OS and runs the correct command format
+                    if (isUnix()) {
+                        sh 'python3 app.py'
+                    } else {
+                        bat 'python app.py'
+                    }
+                }
+            }
+        }
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'exam_summary_report.txt', fingerprint: true
+            }
+        }
+    }
+}
